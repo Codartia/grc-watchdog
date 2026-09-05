@@ -3,7 +3,6 @@
 # precisa estar bem coberto - e o que permite testar sem rede.
 
 _tmp="$(mktemp -d)"
-trap 'rm -rf "$_tmp"' EXIT
 
 # Stub que devolve sempre 200.
 cat > "$_tmp/fetch-200.sh" <<'STUB'
@@ -70,6 +69,9 @@ SONDA_FETCH_CMD="$_tmp/fetch-conta.sh" bash scripts/sonda.sh "$_tmp/alvos-um.con
 assert_eq "2" "$(wc -l < "$CONTADOR" | tr -d ' ')" "alvo em falha e tentado 2 vezes"
 
 : > "$CONTADOR"
-SONDA_FETCH_CMD="$_tmp/fetch-200.sh" bash scripts/sonda.sh "$_tmp/alvos-um.conf" >/dev/null
-assert_eq "0" "$(wc -l < "$CONTADOR" | tr -d ' ')" "alvo saudavel nao usa o stub contador"
+printf '%s\n' 'https://exemplo.test/a 500' > "$_tmp/alvos-500.conf"
+SONDA_FETCH_CMD="$_tmp/fetch-conta.sh" bash scripts/sonda.sh "$_tmp/alvos-500.conf" >/dev/null
+assert_eq "1" "$(wc -l < "$CONTADOR" | tr -d ' ')" "alvo que acerta de primeira nao tenta de novo"
 unset CONTADOR
+
+rm -rf "$_tmp"
