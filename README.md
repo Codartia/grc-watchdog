@@ -25,7 +25,8 @@ Cada camada cobre o ponto cego da outra:
 | Região AWS inteira fora do ar | Camada 1 (mora no GitHub; Z-API é terceiro) |
 | Workflow parou de rodar (outage GH, cron pulado, auto-disable de 60 dias) | Camada 2 |
 | GitHub **e** AWS caem juntos | Camada 2 (healthchecks.io é um terceiro independente) |
-| Z-API fora do ar | E-mail da camada 2 |
+| Camada 2 precisa alertar e o Z-API está fora | E-mail da camada 2 (redundância de canal) |
+| Caminho de envio quebrado (token vencido ou Z-API fora) durante operação normal | **Ninguém** — o envio só é exercitado quando há alerta; ver §12 |
 | healthchecks.io **e** GitHub caem juntos | **Ninguém** — risco aceito, ver §12 da spec |
 
 Detalhe completo da arquitetura e das decisões: a spec `T0.8-vigia-externo-spec.md`, na
