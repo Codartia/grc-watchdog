@@ -28,8 +28,8 @@ Cada camada cobre o ponto cego da outra:
 | Z-API fora do ar | E-mail da camada 2 |
 | healthchecks.io **e** GitHub caem juntos | **Ninguém** — risco aceito, ver §12 da spec |
 
-Detalhe completo da arquitetura e das decisões: [`docs/observabilidade/T0.8-vigia-externo-spec.md`](../code/docs/observabilidade/T0.8-vigia-externo-spec.md)
-no repo `code` do projeto Quorum.
+Detalhe completo da arquitetura e das decisões: a spec `T0.8-vigia-externo-spec.md`, na
+documentação interna de observabilidade do projeto (repositório privado).
 
 ## Como rodar a suite
 
