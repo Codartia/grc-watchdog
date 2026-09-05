@@ -1,0 +1,5 @@
+# Os scripts e o YAML deste repo rodam no runner Ubuntu do GitHub Actions.
+# Um arquivo commitado com CRLF quebra la com `$'\r': command not found`, e a
+# maquina de origem usa core.autocrlf=true — entao o fim de linha e travado aqui
+# em vez de depender da deteccao automatica do git.
+* text=auto eol=lf
