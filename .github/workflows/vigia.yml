@@ -60,17 +60,54 @@ jobs:
           ATUAL: ${{ needs.sonda.outputs.resultado }}
         run: |
           set -uo pipefail
+          # Se o job de sonda nao chegou a produzir resultado (checkout quebrado,
+          # runner morto, script quebrado por um commit), o ciclo conta como falha.
+          atual="${ATUAL:-falha}"
+
           # O ciclo corrente ainda nao esta no historico (a execucao esta
           # in_progress), entao os dois que vierem sao anterior e penultimo.
-          historico="$(bash scripts/estado-anterior.sh 2)"
+          codigo=0
+          historico="$(bash scripts/estado-anterior.sh 2)" || codigo=$?
+
+          if [ "$codigo" -eq 3 ]; then
+            # MEMORIA INDISPONIVEL. Sem historico nao da para saber se esta e a
+            # primeira ou a segunda falha consecutiva, entao a regra dos 2 ciclos
+            # nao pode ser aplicada. A assimetria abaixo e DELIBERADA:
+            #
+            #  - atual em falha -> ALERTA. Um alerta a mais num caso raro custa
+            #    muito menos que silencio permanente. Tratar memoria quebrada
+            #    como "estava ok" era exatamente o defeito que fazia o vigia
+            #    nunca alertar, para nenhuma queda, sem nada acusar.
+            #  - atual em ok    -> silencio, porque nao ha evidencia nenhuma de
+            #    problema no Graces e mandar mensagem aqui seria ruido puro.
+            #
+            # Nos DOIS casos a execucao e marcada como nao-saudavel: o batimento
+            # vai para /fail e o healthchecks.io avisa que a memoria do vigia
+            # quebrou, que e um defeito do vigia e precisa ser consertado.
+            echo "MEMORIA INDISPONIVEL (estado-anterior.sh saiu 3). atual=${atual}"
+            echo "saudavel=false" >> "$GITHUB_OUTPUT"
+            if [ "$atual" = "falha" ]; then
+              echo "acao=queda" >> "$GITHUB_OUTPUT"
+            else
+              echo "acao=silencio" >> "$GITHUB_OUTPUT"
+            fi
+            exit 0
+          fi
+
+          if [ "$codigo" -ne 0 ]; then
+            echo "estado-anterior.sh saiu ${codigo}, codigo inesperado" >&2
+            exit "$codigo"
+          fi
+
           anterior="$(echo "$historico" | sed -n '1p')"
           penultimo="$(echo "$historico" | sed -n '2p')"
-          atual="${ATUAL:-falha}"
           acao="$(bash scripts/decide-alerta.sh "$penultimo" "$anterior" "$atual")"
           echo "penultimo=$penultimo anterior=$anterior atual=$atual -> $acao"
           echo "acao=$acao" >> "$GITHUB_OUTPUT"
+          echo "saudavel=true" >> "$GITHUB_OUTPUT"
 
       - name: Alertar queda
+        id: alertar-queda
         if: steps.decidir.outputs.acao == 'queda'
         env:
           ZAPI_INSTANCE_ID: ${{ secrets.ZAPI_INSTANCE_ID }}
@@ -83,16 +120,33 @@ jobs:
           set -uo pipefail
           quando="$(TZ=America/Sao_Paulo date '+%d/%m %H:%M')"
           execucao="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-          mensagem="$(printf '%s\n' \
-            'GRACES FORA DO AR (vigia externo)' \
-            '' \
-            "$RELATORIO" \
-            '' \
-            "Detectado em ${quando} (Sao Paulo)" \
-            "Execucao: ${execucao}")"
+          if [ -z "${RELATORIO//[[:space:]]/}" ]; then
+            # O job de sonda falhou sem produzir relatorio nenhum - ou seja, por
+            # um motivo que NAO e o Graces (checkout, runner, script quebrado).
+            # Anunciar "GRACES FORA DO AR" aqui seria afirmar mais do que se
+            # sabe; a mensagem diz a verdade: o estado e desconhecido.
+            mensagem="$(printf '%s\n' \
+              'VIGIA NAO CONSEGUIU SONDAR O GRACES' \
+              '' \
+              'O job de sonda falhou sem produzir relatorio, entao o motivo nao e' \
+              'necessariamente o Graces (pode ser o checkout, o runner ou o proprio script).' \
+              'O estado do Graces e DESCONHECIDO - conferir a mao.' \
+              '' \
+              "Detectado em ${quando} (Sao Paulo)" \
+              "Execucao: ${execucao}")"
+          else
+            mensagem="$(printf '%s\n' \
+              'GRACES FORA DO AR (vigia externo)' \
+              '' \
+              "$RELATORIO" \
+              '' \
+              "Detectado em ${quando} (Sao Paulo)" \
+              "Execucao: ${execucao}")"
+          fi
           bash scripts/notifica-zapi.sh "$mensagem"
 
       - name: Avisar recuperacao
+        id: avisar-recuperacao
         if: steps.decidir.outputs.acao == 'recuperacao'
         env:
           ZAPI_INSTANCE_ID: ${{ secrets.ZAPI_INSTANCE_ID }}
@@ -104,10 +158,36 @@ jobs:
           quando="$(TZ=America/Sao_Paulo date '+%d/%m %H:%M')"
           bash scripts/notifica-zapi.sh "GRACES DE VOLTA - todos os alvos responderam em ${quando} (Sao Paulo)."
 
-      # Camada 2. Bate ponto MESMO se a sonda falhou ou o envio quebrou: o que se
-      # prova aqui e "o vigia rodou", nao "o Graces esta bem". Se so batesse no
-      # caminho feliz, o dead man's switch dispararia junto de toda queda real e
-      # viraria ruido duplicado.
+      # Camada 2. Bate ponto MESMO se a sonda falhou: o que se prova aqui e "o
+      # vigia rodou", nao "o Graces esta bem". Se so batesse no caminho feliz, o
+      # dead man's switch dispararia junto de toda queda real e viraria ruido
+      # duplicado.
+      #
+      # O que muda o batimento e o vigia NAO ter conseguido fazer o seu trabalho:
+      # envio quebrado (token vencido, Z-API fora) ou memoria indisponivel. Nesses
+      # casos o ping vai para <ping-url>/fail, que poe o check em "down" no
+      # healthchecks.io e dispara os alertas dele na hora - por e-mail, num canal
+      # que nao depende do Z-API. Sem isso, "a mensagem silenciosamente nao saiu"
+      # nao chegava a ninguem: o job ficava vermelho e o heartbeat seguia batendo.
+      #
+      # ⚠️ Confirmar o sufixo /fail na hora do ligamento, junto da criacao do
+      # check (a API do healthchecks.io documenta /fail, mas so o check real prova).
       - name: Bater ponto no healthchecks.io
         if: always()
-        run: curl -fsS -m 10 --retry 3 "${{ secrets.HEALTHCHECKS_PING_URL }}" > /dev/null
+        env:
+          # Segredo vai por env, nunca interpolado direto no run.
+          PING_URL: ${{ secrets.HEALTHCHECKS_PING_URL }}
+          MEMORIA_OK: ${{ steps.decidir.outputs.saudavel }}
+          ENVIO_QUEDA: ${{ steps.alertar-queda.outcome }}
+          ENVIO_RECUPERACAO: ${{ steps.avisar-recuperacao.outcome }}
+        run: |
+          set -uo pipefail
+          url="$PING_URL"
+          if [ "$MEMORIA_OK" != "true" ] \
+             || [ "$ENVIO_QUEDA" = "failure" ] \
+             || [ "$ENVIO_RECUPERACAO" = "failure" ]; then
+            url="${PING_URL%/}/fail"
+            echo "vigia nao conseguiu fazer o seu trabalho (memoria=${MEMORIA_OK}" \
+                 "queda=${ENVIO_QUEDA} recuperacao=${ENVIO_RECUPERACAO}); batendo em /fail"
+          fi
+          curl -fsS -m 10 --retry 3 "$url" > /dev/null

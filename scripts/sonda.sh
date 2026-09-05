@@ -29,7 +29,11 @@ buscar() {
 
 houve_falha=0
 
-while read -r url esperado _resto; do
+# O `|| [ -n "$url" ]` recupera a ultima linha quando o arquivo nao termina em
+# newline. O README manda humanos editarem o alvos.conf a mao; sem isso, um
+# editor que nao poe a quebra final faria o ultimo alvo deixar de ser sondado -
+# em silencio, que e o pior modo de falha possivel aqui.
+while read -r url esperado _resto || [ -n "$url" ]; do
   case "$url" in ''|\#*) continue ;; esac
   [ -n "${esperado:-}" ] || continue
 

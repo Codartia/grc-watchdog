@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # Envia uma mensagem de texto pelo Z-API.
 #
-# Contrato conferido no codigo que ja roda em producao
-# (publicacao/zapi-notifier/lambda/zapi_deploy_notifier.py:288-316):
+# Contrato conferido no notificador de deploy que ja roda em producao:
 #   POST https://api.z-api.io/instances/{ID}/token/{TOKEN}/send-text
 #   headers: Content-Type: application/json + Client-Token: {CLIENT_TOKEN}
 #   body:    {"phone": "<destino>", "message": "<texto>"}

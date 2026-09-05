@@ -74,4 +74,37 @@ SONDA_FETCH_CMD="$_tmp/fetch-conta.sh" bash scripts/sonda.sh "$_tmp/alvos-500.co
 assert_eq "1" "$(wc -l < "$CONTADOR" | tr -d ' ')" "alvo que acerta de primeira nao tenta de novo"
 unset CONTADOR
 
+# --- arquivo sem newline final nao perde o ultimo alvo ---
+# O README manda humanos editarem o alvos.conf; um editor sem quebra final
+# faria o ultimo alvo sumir da sonda em silencio.
+printf 'https://exemplo.test/a 200\nhttps://exemplo.test/b 200' > "$_tmp/alvos-sem-nl.conf"
+saida="$(SONDA_FETCH_CMD="$_tmp/fetch-200.sh" bash scripts/sonda.sh "$_tmp/alvos-sem-nl.conf")"
+codigo=$?
+assert_saida "0" "$codigo" "arquivo sem newline final sai 0 quando tudo responde"
+assert_eq "2" "$(echo "$saida" | grep -c '^OK ')" "ultimo alvo sem newline final e sondado"
+assert_eq "OK https://exemplo.test/b 200 200" \
+  "$(echo "$saida" | sed -n '2p')" "o alvo recuperado e mesmo o ultimo do arquivo"
+
+# E ele tambem precisa DERRUBAR o ciclo quando falha - de nada adianta aparecer
+# na listagem e nao contar para o codigo de saida.
+printf 'https://exemplo.test/a 200\nhttps://exemplo.test/b 200' > "$_tmp/alvos-sem-nl2.conf"
+saida="$(SONDA_FETCH_CMD="$_tmp/fetch-000.sh" bash scripts/sonda.sh "$_tmp/alvos-sem-nl2.conf")"
+codigo=$?
+assert_saida "1" "$codigo" "alvo sem newline final em falha faz a sonda sair 1"
+assert_eq "2" "$(echo "$saida" | grep -c '^FALHA ')" "as duas linhas viram FALHA"
+
+# Arquivo de UMA linha so, sem newline nenhum: o caso extremo do mesmo bug.
+printf 'https://exemplo.test/unico 200' > "$_tmp/alvos-uma-linha.conf"
+saida="$(SONDA_FETCH_CMD="$_tmp/fetch-000.sh" bash scripts/sonda.sh "$_tmp/alvos-uma-linha.conf")"
+codigo=$?
+assert_saida "1" "$codigo" "arquivo de uma linha sem newline ainda e sondado"
+assert_eq "FALHA https://exemplo.test/unico 000 200" "$saida" "e a linha sai completa"
+
+# --- arquivo totalmente vazio nao entra em laco nem quebra ---
+: > "$_tmp/alvos-nada.conf"
+saida="$(SONDA_FETCH_CMD="$_tmp/fetch-000.sh" bash scripts/sonda.sh "$_tmp/alvos-nada.conf")"
+codigo=$?
+assert_saida "0" "$codigo" "arquivo vazio nao gera falha"
+assert_eq "" "$saida" "arquivo vazio nao gera saida"
+
 rm -rf "$_tmp"

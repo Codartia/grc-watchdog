@@ -20,7 +20,9 @@ chmod +x "$_tmp/curl-401.sh"
 export ZAPI_INSTANCE_ID="INST123"
 export ZAPI_INSTANCE_TOKEN="TOKENSECRETO456"
 export ZAPI_CLIENT_TOKEN="CLIENTSECRETO789"
-export ZAPI_DESTINO="120363426100547223-group"
+# groupId sintetico, no formato que o Z-API usa. Nunca por aqui um identificador
+# real de cliente: este repositorio e publico.
+export ZAPI_DESTINO="120360000000000000-group"
 export CHAMADA_ARQUIVO="$_tmp/chamada.txt"
 
 # --- dry-run nao envia e nao vaza segredo ---
@@ -29,7 +31,7 @@ assert_saida "0" "$?" "dry-run sai 0"
 assert_eq "0" "$(echo "$saida" | grep -c 'TOKENSECRETO456')" "dry-run nao imprime o instance token"
 assert_eq "0" "$(echo "$saida" | grep -c 'CLIENTSECRETO789')" "dry-run nao imprime o client token"
 assert_eq "1" "$(echo "$saida" | grep -c 'teste de mensagem')" "dry-run mostra a mensagem"
-assert_eq "1" "$(echo "$saida" | grep -c '^DRY-RUN destino: 120363426100547223-group$')" "dry-run mostra o destino na linha legivel"
+assert_eq "1" "$(echo "$saida" | grep -c '^DRY-RUN destino: 120360000000000000-group$')" "dry-run mostra o destino na linha legivel"
 
 # --- envio com sucesso ---
 : > "$CHAMADA_ARQUIVO"
@@ -37,7 +39,7 @@ saida="$(ZAPI_CURL_CMD="$_tmp/curl-200.sh" bash scripts/notifica-zapi.sh "ola")"
 assert_saida "0" "$?" "envio com HTTP 200 sai 0"
 assert_eq "1" "$(grep -c 'send-text' "$CHAMADA_ARQUIVO")" "url termina em send-text"
 assert_eq "1" "$(grep -c 'Client-Token: CLIENTSECRETO789' "$CHAMADA_ARQUIVO")" "header Client-Token vai na chamada"
-assert_eq "1" "$(grep -c '"phone":"120363426100547223-group"' "$CHAMADA_ARQUIVO")" "payload usa o campo phone"
+assert_eq "1" "$(grep -c '"phone":"120360000000000000-group"' "$CHAMADA_ARQUIVO")" "payload usa o campo phone"
 
 # --- Z-API recusando ---
 bash -c 'ZAPI_CURL_CMD="'"$_tmp"'/curl-401.sh" bash scripts/notifica-zapi.sh "ola"' >/dev/null 2>&1
