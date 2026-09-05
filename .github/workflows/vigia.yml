@@ -1,0 +1,113 @@
+# Camada 1 do T0.8: sonda os alvos publicos do Graces de fora da AWS.
+# Camada 2 (dead man's switch) e o batimento no healthchecks.io, no fim do job.
+name: vigia
+
+on:
+  schedule:
+    # A cada 5 min - granularidade minima que o GitHub aceita em schedule.
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read   # estado-anterior.sh le o historico de execucoes
+
+concurrency:
+  # Se um ciclo atrasar, o proximo nao deve rodar por cima e embaralhar o historico.
+  group: vigia
+  cancel-in-progress: false
+
+jobs:
+  # A CONCLUSAO DESTE JOB E O ESTADO DO CICLO. Nao adicionar aqui nenhum passo
+  # que possa falhar por outro motivo que nao a sonda - falha de notificacao,
+  # por exemplo, mora no job de baixo justamente para nao contaminar a memoria.
+  sonda:
+    runs-on: ubuntu-latest
+    outputs:
+      resultado: ${{ steps.sondar.outputs.resultado }}
+      relatorio: ${{ steps.sondar.outputs.relatorio }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: sondar
+        run: |
+          set -uo pipefail
+          codigo=0
+          saida="$(bash scripts/sonda.sh)" || codigo=$?
+          echo "$saida"
+          {
+            echo "relatorio<<FIM_DO_RELATORIO"
+            echo "$saida"
+            echo "FIM_DO_RELATORIO"
+          } >> "$GITHUB_OUTPUT"
+          if [ "$codigo" -eq 0 ]; then
+            echo "resultado=ok" >> "$GITHUB_OUTPUT"
+          else
+            echo "resultado=falha" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+  notifica:
+    needs: sonda
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: decidir
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ATUAL: ${{ needs.sonda.outputs.resultado }}
+        run: |
+          set -uo pipefail
+          # O ciclo corrente ainda nao esta no historico (a execucao esta
+          # in_progress), entao os dois que vierem sao anterior e penultimo.
+          historico="$(bash scripts/estado-anterior.sh 2)"
+          anterior="$(echo "$historico" | sed -n '1p')"
+          penultimo="$(echo "$historico" | sed -n '2p')"
+          atual="${ATUAL:-falha}"
+          acao="$(bash scripts/decide-alerta.sh "$penultimo" "$anterior" "$atual")"
+          echo "penultimo=$penultimo anterior=$anterior atual=$atual -> $acao"
+          echo "acao=$acao" >> "$GITHUB_OUTPUT"
+
+      - name: Alertar queda
+        if: steps.decidir.outputs.acao == 'queda'
+        env:
+          ZAPI_INSTANCE_ID: ${{ secrets.ZAPI_INSTANCE_ID }}
+          ZAPI_INSTANCE_TOKEN: ${{ secrets.ZAPI_INSTANCE_TOKEN }}
+          ZAPI_CLIENT_TOKEN: ${{ secrets.ZAPI_CLIENT_TOKEN }}
+          ZAPI_DESTINO: ${{ secrets.ZAPI_DESTINO }}
+          # Passado por env, nunca interpolado direto no shell.
+          RELATORIO: ${{ needs.sonda.outputs.relatorio }}
+        run: |
+          set -uo pipefail
+          quando="$(TZ=America/Sao_Paulo date '+%d/%m %H:%M')"
+          execucao="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          mensagem="$(printf '%s\n' \
+            'GRACES FORA DO AR (vigia externo)' \
+            '' \
+            "$RELATORIO" \
+            '' \
+            "Detectado em ${quando} (Sao Paulo)" \
+            "Execucao: ${execucao}")"
+          bash scripts/notifica-zapi.sh "$mensagem"
+
+      - name: Avisar recuperacao
+        if: steps.decidir.outputs.acao == 'recuperacao'
+        env:
+          ZAPI_INSTANCE_ID: ${{ secrets.ZAPI_INSTANCE_ID }}
+          ZAPI_INSTANCE_TOKEN: ${{ secrets.ZAPI_INSTANCE_TOKEN }}
+          ZAPI_CLIENT_TOKEN: ${{ secrets.ZAPI_CLIENT_TOKEN }}
+          ZAPI_DESTINO: ${{ secrets.ZAPI_DESTINO }}
+        run: |
+          set -uo pipefail
+          quando="$(TZ=America/Sao_Paulo date '+%d/%m %H:%M')"
+          bash scripts/notifica-zapi.sh "GRACES DE VOLTA - todos os alvos responderam em ${quando} (Sao Paulo)."
+
+      # Camada 2. Bate ponto MESMO se a sonda falhou ou o envio quebrou: o que se
+      # prova aqui e "o vigia rodou", nao "o Graces esta bem". Se so batesse no
+      # caminho feliz, o dead man's switch dispararia junto de toda queda real e
+      # viraria ruido duplicado.
+      - name: Bater ponto no healthchecks.io
+        if: always()
+        run: curl -fsS -m 10 --retry 3 "${{ secrets.HEALTHCHECKS_PING_URL }}" > /dev/null

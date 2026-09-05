@@ -1,0 +1,17 @@
+# Roda a suite a cada push e PR. Como efeito colateral util, commits neste repo
+# tambem zeram o contador de 60 dias que faz o GitHub desabilitar workflow
+# agendado por inatividade - mas isso e bonus, nao mitigacao: quem cobre esse
+# risco de verdade e a camada 2.
+name: testes
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  suite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash tests/run.sh
