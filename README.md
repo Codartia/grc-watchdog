@@ -71,14 +71,24 @@ O workflow `vigia.yml` precisa destes 5 *Actions secrets*, configurados em
 
 ## ⚠️ Aviso de rotação
 
-As credenciais Z-API deste repo são uma **segunda cópia** das que já vivem no SSM
-`/graces/zapi/notifier`, na AWS do Graces. A duplicação é deliberada: um vigia que precisasse ler o
-SSM não funcionaria justamente durante uma queda da AWS, que é o cenário que ele existe para cobrir.
+As credenciais do Z-API aqui são uma segunda cópia das que vivem no SSM `/graces/zapi/notifier` da
+AWS. A duplicação é deliberada: um vigia que precisasse ler o SSM não funcionaria durante uma queda
+da AWS.
 
-Isso tem um preço: se o token Z-API for rotacionado, **os dois lugares precisam ser atualizados** —
-aqui (secrets deste repo) e no SSM. Se só um dos dois for atualizado, o envio daqui para de
-funcionar silenciosamente; quem avisa disso é a **camada 2** (o job falha, o ping para, e o
-healthchecks.io dispara depois do grace).
+**Rotacionar o token exige atualizar os dois lugares, e nada aqui avisa se você esquecer.** O
+`notifica-zapi.sh` só é chamado quando há alerta para enviar — em operação normal ele nunca roda,
+então uma credencial vencida não é exercitada e não aparece em lugar nenhum. A camada 2 também não
+pega: o batimento do heartbeat é enviado com `if: always()`, de propósito, então ele continua
+chegando mesmo com o envio quebrado. O resultado é que um token errado fica silencioso até a
+primeira queda de verdade, e aí a mensagem não sai.
+
+Por isso, ao rotacionar: atualize o SSM e o secret deste repositório **na mesma operação**, e valide
+na hora enviando uma mensagem de teste à mão com os valores novos:
+```bash
+ZAPI_INSTANCE_ID=... ZAPI_INSTANCE_TOKEN=... ZAPI_CLIENT_TOKEN=... ZAPI_DESTINO=... \
+  bash scripts/notifica-zapi.sh "teste de credencial apos rotacao"
+```
+(sem `--dry-run` — o dry-run não chama a API e portanto não valida credencial nenhuma.)
 
 ## Como trocar o destino
 
