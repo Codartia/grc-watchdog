@@ -53,6 +53,7 @@ url="https://api.z-api.io/instances/${ZAPI_INSTANCE_ID}/token/${ZAPI_INSTANCE_TO
 
 if [ "$DRY" -eq 1 ]; then
   # A url carrega dois segredos no caminho, entao ela nunca e impressa.
+  echo "DRY-RUN destino: ${ZAPI_DESTINO}"
   echo "DRY-RUN url:     https://api.z-api.io/instances/***/token/***/send-text"
   echo "DRY-RUN payload: ${payload}"
   exit 0

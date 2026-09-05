@@ -29,7 +29,7 @@ assert_saida "0" "$?" "dry-run sai 0"
 assert_eq "0" "$(echo "$saida" | grep -c 'TOKENSECRETO456')" "dry-run nao imprime o instance token"
 assert_eq "0" "$(echo "$saida" | grep -c 'CLIENTSECRETO789')" "dry-run nao imprime o client token"
 assert_eq "1" "$(echo "$saida" | grep -c 'teste de mensagem')" "dry-run mostra a mensagem"
-assert_eq "1" "$(echo "$saida" | grep -c '120363426100547223-group')" "dry-run mostra o destino"
+assert_eq "1" "$(echo "$saida" | grep -c '^DRY-RUN destino: 120363426100547223-group$')" "dry-run mostra o destino na linha legivel"
 
 # --- envio com sucesso ---
 : > "$CHAMADA_ARQUIVO"
