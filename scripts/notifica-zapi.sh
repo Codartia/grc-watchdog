@@ -59,15 +59,25 @@ if [ "$DRY" -eq 1 ]; then
 fi
 
 CURL="${ZAPI_CURL_CMD:-curl}"
-codigo="$("$CURL" -s -o /dev/null -w '%{http_code}' -X POST "$url" \
+# O corpo da resposta e capturado junto do codigo: sem ele, uma falha de envio
+# vira "HTTP 400" e mais nada, e o motivo real (instancia desconectada, telefone
+# invalido, token vencido) so existe nessa resposta. Descoberto no E2E do
+# ligamento, em 2026-09-08, quando o primeiro envio real falhou sem pista.
+resposta="$("$CURL" -s -w '\n%{http_code}' -X POST "$url" \
   -H 'Content-Type: application/json' \
   -H "Client-Token: ${ZAPI_CLIENT_TOKEN}" \
   --data "$payload" --max-time 20 2>/dev/null)" || true
+
+codigo="$(printf '%s' "$resposta" | tail -n 1)"
+corpo="$(printf '%s' "$resposta" | sed '$d')"
 
 if [ "$codigo" = "200" ]; then
   echo "enviado"
   exit 0
 fi
 
+# O corpo e mensagem de erro do Z-API, nao conteudo nosso. Os segredos vao na
+# URL e no header, nunca na resposta; e o Actions ainda mascara secrets no log.
 echo "falha no envio ao Z-API: HTTP ${codigo:-000}" >&2
+echo "resposta do Z-API: ${corpo:-<vazia>}" >&2
 exit 1
