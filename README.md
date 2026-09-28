@@ -9,7 +9,8 @@ observabilidade do Graces mora **dentro** da AWS do cliente e cai junto com ela 
 
 - **Camada 1 — sondador ativo:** um workflow do GitHub Actions (`vigia.yml`) roda a cada 5 minutos,
   chama cada alvo de `alvos.conf` e, depois de 2 ciclos consecutivos em falha, manda uma mensagem
-  pelo Z-API. Também avisa quando os alvos voltam a responder.
+  pelo Z-API. Também avisa quando os alvos voltam a responder. Quem garante os 5 minutos é um cron
+  externo que dispara o workflow pela API — ver [Disparo externo](#disparo-externo).
 - **Camada 2 — dead man's switch:** a cada execução, com sucesso ou falha, o workflow bate ponto
   numa URL do [healthchecks.io](https://healthchecks.io). Se esse ping sumir por mais de 20 minutos,
   o healthchecks.io dispara sozinho — por webhook (Z-API) e por e-mail. É a camada que percebe a
@@ -28,6 +29,7 @@ Cada camada cobre o ponto cego da outra:
 | Graces inteiro fora do ar | Camada 1 |
 | Região AWS inteira fora do ar | Camada 1 (mora no GitHub; Z-API é terceiro) |
 | Workflow parou de rodar (outage GH, cron pulado **por mais de 20 min**, auto-disable de 60 dias) | Camada 2 |
+| Disparo externo parou (token vencido ou revogado, cron-job.org fora) | Camada 2 (o ping rareia para o ritmo do `schedule`) e o e-mail de falha do próprio cron-job.org |
 | GitHub **e** AWS caem juntos | Camada 2 (healthchecks.io é um terceiro independente) |
 | Camada 2 precisa alertar e o Z-API está fora | E-mail da camada 2 (redundância de canal) |
 | Envio do alerta falha no instante da queda (token vencido, Z-API fora) | Camada 2 — o batimento daquela execução vai para `/fail` e o healthchecks.io dispara na hora |
@@ -37,6 +39,33 @@ Cada camada cobre o ponto cego da outra:
 
 Detalhe completo da arquitetura e das decisões: a spec `T0.8-vigia-externo-spec.md`, na
 documentação interna de observabilidade do projeto (repositório privado).
+
+## Disparo externo
+
+O `schedule` do GitHub não entrega os 5 minutos. Em repositório público ele é "melhor esforço" e,
+medido entre 09/09 e 27/09/2026, rodou de 5 a 8 vezes **por dia** em vez de 288. Por isso o gatilho
+principal é um job no [cron-job.org](https://cron-job.org) que chama, a cada 5 minutos:
+
+```
+POST https://api.github.com/repos/Codartia/grc-watchdog/actions/workflows/vigia.yml/dispatches
+Authorization: Bearer <token>
+Accept: application/vnd.github+json
+X-GitHub-Api-Version: 2022-11-28
+
+{"ref":"main"}
+```
+
+A resposta esperada é **204**. O job está configurado para avisar por e-mail quando a chamada falha.
+
+O `<token>` é um *fine-grained personal access token* com acesso **só a este repositório** e uma
+única permissão: **Actions: Read and write**. O pior que ele permite é disparar, cancelar ou apagar
+execuções deste workflow — não lê segredo, não escreve código.
+
+⚠️ **O token vence.** Quando vencer, o disparo passa a receber 401, o cron-job.org avisa por e-mail
+e o vigia cai para o ritmo do `schedule` — o que faz a camada 2 acusar batimento atrasado. Para
+rotacionar: gerar um token novo com o mesmo escopo, trocar o header no job do cron-job.org, usar o
+botão de execução de teste do job e conferir que apareceu uma execução `workflow_dispatch` nova em
+Actions. Só então revogar o token antigo.
 
 ## Como rodar a suite
 

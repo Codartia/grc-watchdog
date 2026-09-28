@@ -3,8 +3,17 @@
 name: vigia
 
 on:
+  # O GATILHO PRINCIPAL E O workflow_dispatch, chamado a cada 5 min por um cron
+  # externo (cron-job.org) via API do GitHub. O schedule sozinho nao serve: em
+  # repo publico o GitHub trata ele como melhor esforco e, medido de 09/09 a
+  # 27/09/2026, entregou 5 a 8 execucoes por DIA em vez de 288 - um vigia que
+  # olha a cada 3 horas.
+  #
+  # O schedule fica como reserva: se o cron externo parar, o vigia continua
+  # rodando de vez em quando, e o concurrency abaixo impede que os dois gatilhos
+  # rodem por cima um do outro. A memoria (estado-anterior.sh) filtra por
+  # workflow e branch, nao por evento, entao as execucoes dos dois contam igual.
   schedule:
-    # A cada 5 min - granularidade minima que o GitHub aceita em schedule.
     - cron: '*/5 * * * *'
   workflow_dispatch:
 
