@@ -119,10 +119,9 @@ jobs:
         id: alertar-queda
         if: steps.decidir.outputs.acao == 'queda'
         env:
-          ZAPI_INSTANCE_ID: ${{ secrets.ZAPI_INSTANCE_ID }}
-          ZAPI_INSTANCE_TOKEN: ${{ secrets.ZAPI_INSTANCE_TOKEN }}
-          ZAPI_CLIENT_TOKEN: ${{ secrets.ZAPI_CLIENT_TOKEN }}
-          ZAPI_DESTINO: ${{ secrets.ZAPI_DESTINO }}
+          LEVAZAP_API_KEY: ${{ secrets.LEVAZAP_API_KEY }}
+          LEVAZAP_INSTANCE_ID: ${{ secrets.LEVAZAP_INSTANCE_ID }}
+          LEVAZAP_DESTINO: ${{ secrets.LEVAZAP_DESTINO }}
           # Passado por env, nunca interpolado direto no shell.
           RELATORIO: ${{ needs.sonda.outputs.relatorio }}
         run: |
@@ -152,20 +151,31 @@ jobs:
               "Detectado em ${quando} (Sao Paulo)" \
               "Execucao: ${execucao}")"
           fi
-          bash scripts/notifica-zapi.sh "$mensagem"
+          bash scripts/notifica-levazap.sh "$mensagem"
 
       - name: Avisar recuperacao
         id: avisar-recuperacao
         if: steps.decidir.outputs.acao == 'recuperacao'
         env:
-          ZAPI_INSTANCE_ID: ${{ secrets.ZAPI_INSTANCE_ID }}
-          ZAPI_INSTANCE_TOKEN: ${{ secrets.ZAPI_INSTANCE_TOKEN }}
-          ZAPI_CLIENT_TOKEN: ${{ secrets.ZAPI_CLIENT_TOKEN }}
-          ZAPI_DESTINO: ${{ secrets.ZAPI_DESTINO }}
+          LEVAZAP_API_KEY: ${{ secrets.LEVAZAP_API_KEY }}
+          LEVAZAP_INSTANCE_ID: ${{ secrets.LEVAZAP_INSTANCE_ID }}
+          LEVAZAP_DESTINO: ${{ secrets.LEVAZAP_DESTINO }}
         run: |
           set -uo pipefail
           quando="$(TZ=America/Sao_Paulo date '+%d/%m %H:%M')"
-          bash scripts/notifica-zapi.sh "GRACES DE VOLTA - todos os alvos responderam em ${quando} (Sao Paulo)."
+          bash scripts/notifica-levazap.sh "GRACES DE VOLTA - todos os alvos responderam em ${quando} (Sao Paulo)."
+
+      # Canario do canal: a instancia da Levazap precisa estar CONNECTED. Roda em TODO
+      # ciclo, e nao so quando ha alerta: foi assim que a Z-API ficou muda 36 dias sem
+      # ninguem notar. Falha aqui nao derruba o job; ela muda o batimento para /fail.
+      - name: Canario do canal
+        id: canario
+        if: always()
+        continue-on-error: true
+        env:
+          LEVAZAP_API_KEY: ${{ secrets.LEVAZAP_API_KEY }}
+          LEVAZAP_INSTANCE_ID: ${{ secrets.LEVAZAP_INSTANCE_ID }}
+        run: bash scripts/canario-canal.sh
 
       # Camada 2. Bate ponto MESMO se a sonda falhou: o que se prova aqui e "o
       # vigia rodou", nao "o Graces esta bem". Se so batesse no caminho feliz, o
@@ -173,10 +183,10 @@ jobs:
       # duplicado.
       #
       # O que muda o batimento e o vigia NAO ter conseguido fazer o seu trabalho:
-      # envio quebrado (token vencido, Z-API fora) ou memoria indisponivel. Nesses
+      # envio quebrado (chave revogada, Levazap fora), canal desconectado (canario) ou memoria indisponivel. Nesses
       # casos o ping vai para <ping-url>/fail, que poe o check em "down" no
       # healthchecks.io e dispara os alertas dele na hora - por e-mail, num canal
-      # que nao depende do Z-API. Sem isso, "a mensagem silenciosamente nao saiu"
+      # que nao depende do WhatsApp. Sem isso, "a mensagem silenciosamente nao saiu"
       # nao chegava a ninguem: o job ficava vermelho e o heartbeat seguia batendo.
       #
       # ⚠️ Confirmar o sufixo /fail na hora do ligamento, junto da criacao do
@@ -189,14 +199,15 @@ jobs:
           MEMORIA_OK: ${{ steps.decidir.outputs.saudavel }}
           ENVIO_QUEDA: ${{ steps.alertar-queda.outcome }}
           ENVIO_RECUPERACAO: ${{ steps.avisar-recuperacao.outcome }}
+          CANARIO: ${{ steps.canario.outcome }}
         run: |
           set -uo pipefail
           url="$PING_URL"
           if [ "$MEMORIA_OK" != "true" ] \
              || [ "$ENVIO_QUEDA" = "failure" ] \
-             || [ "$ENVIO_RECUPERACAO" = "failure" ]; then
+             || [ "$ENVIO_RECUPERACAO" = "failure" ]              || [ "$CANARIO" = "failure" ]; then
             url="${PING_URL%/}/fail"
             echo "vigia nao conseguiu fazer o seu trabalho (memoria=${MEMORIA_OK}" \
-                 "queda=${ENVIO_QUEDA} recuperacao=${ENVIO_RECUPERACAO}); batendo em /fail"
+                 "queda=${ENVIO_QUEDA} recuperacao=${ENVIO_RECUPERACAO} canario=${CANARIO}); batendo em /fail"
           fi
           curl -fsS -m 10 --retry 3 "$url" > /dev/null
