@@ -105,7 +105,7 @@ lê o SSM `/graces/levazap/notifier` e não imprime valor nenhum.
 | `LEVAZAP_DESTINO` | JID do grupo de alertas (`…@g.us`) |
 | `HEALTHCHECKS_PING_URL` | URL de ping do check no healthchecks.io |
 
-Os `ZAPI_*` antigos saem no desligamento da Z-API (troca Z-API → Levazap, 05/11/2026).
+Os `ZAPI_*` e o `notifica-zapi.sh` foram removidos no desligamento da Z-API (05/11/2026).
 
 ## Canário do canal
 
