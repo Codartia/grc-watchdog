@@ -67,6 +67,50 @@ rotacionar: gerar um token novo com o mesmo escopo, trocar o header no job do cr
 botão de execução de teste do job e conferir que apareceu uma execução `workflow_dispatch` nova em
 Actions. Só então revogar o token antigo.
 
+## Página de status (status.gracesonline.com.br)
+
+A mesma sonda alimenta a página pública de status do Graces, servida pelo GitHub Pages (fora da
+AWS de propósito: a página não pode cair junto com o sistema que ela descreve).
+
+- **Dados:** cada rodada grava o resultado por alvo (`SONDA_RESULTADOS`, com o tempo em ms). O
+  workflow `pagina.yml` soma a rodada no histórico com `scripts/status.py` e republica o site. O
+  histórico (90 dias, por dia de Brasília) mora na branch `dados`, sempre com um commit só.
+- **Serviços:** `site/componentes.json` diz quais alvos compõem cada serviço. A entrada fora = serviço
+  fora; todas as APIs fora = fora; parte das APIs = instabilidade; algum alvo acima de 3 s = lentidão.
+  O painel interno é sondado mas não aparece na página.
+- **Mesma regra do alerta:** problema só conta depois de 2 rodadas seguidas. Rodada que não aconteceu
+  não conta nem como no ar nem como fora; sem rodada há mais de 20 min, a página avisa que está
+  desatualizada.
+- **Incidentes e manutenções:** `site/incidentes.json`, escrito pelo Painel quando o Ad declara ou
+  atualiza um incidente (ou à mão, aqui no GitHub, se o Painel estiver fora). Todo push em `site/`
+  republica a página. Formato:
+
+```json
+{
+  "versao": 1,
+  "incidentes": [{
+    "id": "INC-0010",
+    "tipo": "incidente",
+    "titulo": "Lentidão ao abrir a agenda",
+    "componentes": ["sistema-web", "app-profissional"],
+    "impacto": "lento",
+    "inicio": "2026-11-25T15:00:00Z",
+    "fim": null,
+    "atualizacoes": [
+      {"em": "2026-11-25T15:05:00Z", "estado": "investigando", "texto": "Estamos analisando."}
+    ]
+  }]
+}
+```
+
+  `tipo`: `incidente` ou `manutencao`. `impacto` (incidente): `lento`, `instavel` ou `fora`.
+  `estado` da atualização: `investigando`, `identificado`, `monitorando`, `resolvido` (incidente) ou
+  `agendada`, `em-andamento`, `concluida`, `cancelada` (manutenção). Incidente com `fim` nulo está
+  aberto. Na manutenção, `inicio`/`fim` são o período previsto. Os `id` de `componentes` são
+  contrato: não renomear em `componentes.json`.
+
+Testes do agregador: `python3 -m unittest discover -s tests -p 'test_*.py'`.
+
 ## Como rodar a suite
 
 ```bash

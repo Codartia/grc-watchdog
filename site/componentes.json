@@ -1,0 +1,61 @@
+{
+  "_leia": "Servicos da pagina de status. 'entrada' e a porta do servico: se ela falha, o servico esta fora. 'dependencias' sao as APIs que ele usa: se todas falham, fora; se so parte, instabilidade. Toda URL daqui precisa existir no alvos.conf (teste_status.py confere). O 'id' e contrato com o Painel (incidentes.json): nao renomear.",
+  "grupos": [
+    {
+      "nome": "Aplicações",
+      "componentes": [
+        {
+          "id": "sistema-web",
+          "nome": "Sistema web",
+          "descricao": "O Graces no navegador, usado pelo salão.",
+          "entrada": ["https://gracesonline.com.br/"],
+          "dependencias": [
+            "https://gracesonline.com.br/GracesApi1/health/live",
+            "https://gracesonline.com.br/GracesApi2/health/live",
+            "https://gracesonline.com.br/GracesApi3/health/live"
+          ]
+        },
+        {
+          "id": "app-agendamento",
+          "nome": "App de agendamento",
+          "descricao": "A agenda online em que o cliente do salão marca horário.",
+          "entrada": ["https://app.gracesonline.com.br/"],
+          "dependencias": [
+            "https://gracesonline.com.br/GracesApi2/health/live",
+            "https://gracesonline.com.br/GracesApi3/health/live"
+          ]
+        },
+        {
+          "id": "app-profissional",
+          "nome": "App do profissional",
+          "descricao": "O app em que o profissional vê a agenda e as comissões.",
+          "entrada": ["https://profissional.gracesonline.com.br/"],
+          "dependencias": [
+            "https://gracesonline.com.br/GracesApi1/health/live",
+            "https://gracesonline.com.br/GracesApi2/health/live",
+            "https://gracesonline.com.br/GracesApi3/health/live"
+          ]
+        }
+      ]
+    },
+    {
+      "nome": "Integrações",
+      "componentes": [
+        {
+          "id": "api-publica",
+          "nome": "API Pública",
+          "descricao": "A API para sistemas parceiros integrarem com o Graces.",
+          "entrada": ["https://api.gracesonline.com.br/health/live"],
+          "dependencias": []
+        },
+        {
+          "id": "portal-desenvolvedor",
+          "nome": "Portal do desenvolvedor",
+          "descricao": "A documentação da API Pública.",
+          "entrada": ["https://api.gracesonline.com.br/"],
+          "dependencias": []
+        }
+      ]
+    }
+  ]
+}

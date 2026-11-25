@@ -35,6 +35,7 @@ jobs:
     outputs:
       resultado: ${{ steps.sondar.outputs.resultado }}
       relatorio: ${{ steps.sondar.outputs.relatorio }}
+      resultados: ${{ steps.sondar.outputs.resultados }}
     steps:
       - uses: actions/checkout@v4
 
@@ -42,12 +43,17 @@ jobs:
         run: |
           set -uo pipefail
           codigo=0
+          # SONDA_RESULTADOS alimenta a pagina de status; nao muda a saida padrao.
+          export SONDA_RESULTADOS="$RUNNER_TEMP/resultados.tsv"
           saida="$(bash scripts/sonda.sh)" || codigo=$?
           echo "$saida"
           {
             echo "relatorio<<FIM_DO_RELATORIO"
             echo "$saida"
             echo "FIM_DO_RELATORIO"
+            echo "resultados<<FIM_DOS_RESULTADOS"
+            cat "$SONDA_RESULTADOS" 2>/dev/null || true
+            echo "FIM_DOS_RESULTADOS"
           } >> "$GITHUB_OUTPUT"
           if [ "$codigo" -eq 0 ]; then
             echo "resultado=ok" >> "$GITHUB_OUTPUT"
@@ -211,3 +217,17 @@ jobs:
                  "queda=${ENVIO_QUEDA} recuperacao=${ENVIO_RECUPERACAO} canario=${CANARIO}); batendo em /fail"
           fi
           curl -fsS -m 10 --retry 3 "$url" > /dev/null
+
+  # Pagina de status: soma esta rodada no historico e republica. Fica num job a
+  # parte (e num workflow reutilizavel) pelo mesmo motivo do `notifica`: falha
+  # aqui nao pode mudar a conclusao do job `sonda`, que e a memoria do vigia.
+  pagina:
+    needs: sonda
+    if: always()
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/pagina.yml
+    with:
+      resultados: ${{ needs.sonda.outputs.resultados }}
