@@ -218,16 +218,26 @@ jobs:
           fi
           curl -fsS -m 10 --retry 3 "$url" > /dev/null
 
-  # Pagina de status: soma esta rodada no historico e republica. Fica num job a
-  # parte (e num workflow reutilizavel) pelo mesmo motivo do `notifica`: falha
-  # aqui nao pode mudar a conclusao do job `sonda`, que e a memoria do vigia.
+  # Pagina de status: dispara o pagina.yml com os resultados desta rodada. Job a
+  # parte pelo mesmo motivo do `notifica`: falha aqui nao pode mudar a conclusao
+  # do job `sonda`, que e a memoria do vigia. E disparo (execucao separada), nao
+  # workflow_call: ver o cabecalho do pagina.yml.
   pagina:
     needs: sonda
     if: always()
+    runs-on: ubuntu-latest
     permissions:
-      contents: write
-      pages: write
-      id-token: write
-    uses: ./.github/workflows/pagina.yml
-    with:
-      resultados: ${{ needs.sonda.outputs.resultados }}
+      actions: write   # so para disparar o pagina.yml
+    steps:
+      - name: Dispara a pagina de status
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # Passado por env, nunca interpolado direto no shell.
+          RESULTADOS: ${{ needs.sonda.outputs.resultados }}
+        run: |
+          set -euo pipefail
+          if [ -z "${RESULTADOS//[[:space:]]/}" ]; then
+            echo "sonda sem resultados: nada a somar (a pagina mostra desatualizada se persistir)"
+            exit 0
+          fi
+          gh workflow run pagina.yml --repo "$GITHUB_REPOSITORY" --ref main -f resultados="$RESULTADOS"
