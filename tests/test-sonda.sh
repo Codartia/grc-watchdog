@@ -107,4 +107,32 @@ codigo=$?
 assert_saida "0" "$codigo" "arquivo vazio nao gera falha"
 assert_eq "" "$saida" "arquivo vazio nao gera saida"
 
+# --- arquivo de resultados da pagina de status (SONDA_RESULTADOS) ---
+cat > "$_tmp/fetch-tempo.sh" <<'STUB'
+#!/usr/bin/env bash
+case "$1" in
+  *lenta*) echo "200 3.2041" ;;
+  *fora*)  echo "000 10.001" ;;
+  *)       echo "200 0.0425" ;;
+esac
+STUB
+chmod +x "$_tmp/fetch-tempo.sh"
+printf '%s\n' 'https://exemplo.test/rapida 200' 'https://exemplo.test/lenta 200' 'https://exemplo.test/fora 200' > "$_tmp/alvos-tempo.conf"
+saida="$(SONDA_RESULTADOS="$_tmp/res.tsv" SONDA_FETCH_CMD="$_tmp/fetch-tempo.sh" bash scripts/sonda.sh "$_tmp/alvos-tempo.conf")"
+codigo=$?
+assert_saida "1" "$codigo" "com resultados ligado o codigo de saida nao muda"
+assert_eq "OK https://exemplo.test/lenta 200 200" "$(echo "$saida" | sed -n '2p')" "a saida padrao nao ganha o tempo"
+assert_eq "3" "$(wc -l < "$_tmp/res.tsv" | tr -d ' ')" "uma linha de resultado por alvo"
+assert_eq "$(printf 'OK\thttps://exemplo.test/rapida\t200\t200\t42')" "$(sed -n '1p' "$_tmp/res.tsv")" "tempo em ms truncado"
+assert_eq "$(printf 'OK\thttps://exemplo.test/lenta\t200\t200\t3204')" "$(sed -n '2p' "$_tmp/res.tsv")" "segundos inteiros viram milhares"
+assert_eq "$(printf 'FALHA\thttps://exemplo.test/fora\t000\t200\t10001')" "$(sed -n '3p' "$_tmp/res.tsv")" "falha tambem registra"
+
+# Stub sem tempo (o formato antigo do seam): ms fica vazio, nao quebra.
+SONDA_RESULTADOS="$_tmp/res2.tsv" SONDA_FETCH_CMD="$_tmp/fetch-200.sh" bash scripts/sonda.sh "$_tmp/alvos-um.conf" >/dev/null
+assert_eq "$(printf 'OK\thttps://exemplo.test/a\t200\t200\t')" "$(cat "$_tmp/res2.tsv")" "sem tempo medido o campo ms fica vazio"
+
+# Rodada nova zera o arquivo (nao acumula rodadas anteriores).
+SONDA_RESULTADOS="$_tmp/res2.tsv" SONDA_FETCH_CMD="$_tmp/fetch-200.sh" bash scripts/sonda.sh "$_tmp/alvos-um.conf" >/dev/null
+assert_eq "1" "$(wc -l < "$_tmp/res2.tsv" | tr -d ' ')" "cada rodada reescreve o arquivo"
+
 rm -rf "$_tmp"

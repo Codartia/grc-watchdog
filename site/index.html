@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Status Graces</title>
+<meta name="description" content="Situação em tempo real dos sistemas Graces: sistema web, apps e integrações.">
+<meta property="og:title" content="Status Graces">
+<meta property="og:description" content="Situação em tempo real dos sistemas Graces.">
+<meta name="theme-color" content="#1E3461">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+/* Sem fonte externa de proposito: a pagina de status nao pode depender de
+   terceiro nenhum alem do proprio GitHub Pages. */
+:root{color-scheme:light;
+--navy:#1E3461;--blue:#0087C9;--orange:#F89727;--cream:#F9F8F7;--gray:#4F4F4F;--muted:#6B6B6B;--white:#FFFFFF;--border:#E4E3E2;
+--ok:#0087C9;--ok-bg:#E5F3FA;--ok-tx:#005E8C;
+--lento:#E5A800;--lento-bg:#FFF6D6;--lento-tx:#6E5100;
+--instavel:#F07D00;--instavel-bg:#FEEFD9;--instavel-tx:#7A4308;
+--fora:#D23F31;--fora-bg:#FCE7E5;--fora-tx:#8E2318;
+--manutencao:#6C5DD3;--manutencao-bg:#EEECFB;--manutencao-tx:#4335A8;
+--sem:#DAD7D3;--sem-tx:#6B6B6B;
+--r-md:10px;--r-lg:16px;--r-full:9999px;--shadow:0 1px 4px rgba(30,52,97,.08),0 1px 2px rgba(30,52,97,.05);
+--font:'Segoe UI','DM Sans',system-ui,-apple-system,Roboto,'Helvetica Neue',Arial,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--gray);font:400 15px/1.5 var(--font)}
+a{color:var(--blue)}
+.wrap{max-width:848px;margin:0 auto;padding:0 24px}
+header{background:var(--white);border-bottom:1px solid var(--border)}
+header .wrap{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-block:16px}
+header img{height:32px;width:auto;display:block}
+.rotulo{display:flex;align-items:center;gap:10px;color:var(--navy);font-weight:600;font-size:13px;letter-spacing:.04em}
+.par{display:inline-flex;gap:3px}.par i{width:6px;height:18px;border-radius:var(--r-full);background:var(--blue)}.par i+i{background:var(--orange)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* faixa de incidente aberto */
+.faixa{border-radius:var(--r-lg);padding:16px 20px;margin-top:24px;border:1px solid transparent}
+.faixa h2{margin:0 0 4px;font-size:17px;line-height:1.3;display:block}
+.faixa p{margin:4px 0 0;font-size:14px}
+.faixa .meta{font-size:13px;opacity:.85}
+.faixa.fora{background:var(--fora-bg);color:var(--fora-tx);border-color:#F3C1BB}.faixa.fora h2{color:var(--fora-tx)}
+.faixa.instavel{background:var(--instavel-bg);color:var(--instavel-tx);border-color:#F8D3A3}.faixa.instavel h2{color:var(--instavel-tx)}
+.faixa.lento{background:var(--lento-bg);color:var(--lento-tx);border-color:#F1DE95}.faixa.lento h2{color:var(--lento-tx)}
+.faixa.manutencao{background:var(--manutencao-bg);color:var(--manutencao-tx);border-color:#D4CFF5}.faixa.manutencao h2{color:var(--manutencao-tx)}
+
+.hero{text-align:center;padding:40px 0 32px}
+.sinal{width:56px;height:56px;border-radius:50%;background:var(--ok);color:var(--white);display:grid;place-items:center;margin:0 auto 16px}
+.sinal svg{width:30px;height:30px}
+h1{color:var(--navy);font-weight:900;font-size:36px;line-height:1.15;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.hero p{margin:8px 0 0;color:var(--muted);font-size:13px}
+.hero .velho{display:inline-block;margin-top:12px;background:var(--lento-bg);color:var(--lento-tx);border-radius:var(--r-md);padding:8px 14px;font-weight:600}
+
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:8px 24px 16px;margin-bottom:16px}
+h2{color:var(--navy);font-weight:700;font-size:18px;line-height:1.3;margin:16px 0 8px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.selo{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-weight:600;border-radius:var(--r-full);padding:5px 14px}
+.selo svg{width:14px;height:14px}
+.selo.ok{color:var(--ok-tx);background:var(--ok-bg)}.selo.lento{color:var(--lento-tx);background:var(--lento-bg)}
+.selo.instavel{color:var(--instavel-tx);background:var(--instavel-bg)}.selo.fora{color:var(--fora-tx);background:var(--fora-bg)}
+.selo.manutencao{color:var(--manutencao-tx);background:var(--manutencao-bg)}.selo.sem{color:var(--sem-tx);background:#EFEDEA}
+
+.svc{padding:16px 0;border-top:1px solid var(--border)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.nome{color:var(--navy);font-weight:600;font-size:16px;display:flex;align-items:center;gap:10px}
+.nome small{display:block;color:var(--muted);font-weight:400;font-size:13px}
+.ic{flex:none;width:20px;height:20px;border-radius:50%;color:var(--white);display:inline-grid;place-items:center}
+.ic svg{width:12px;height:12px}
+.ic.ok{background:var(--ok)}.ic.lento{background:var(--lento)}.ic.instavel{background:var(--instavel)}.ic.fora{background:var(--fora)}.ic.manutencao{background:var(--manutencao)}.ic.sem{background:#9C9893}
+.dir{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.estado{font-size:13px;font-weight:600}
+.estado.lento{color:var(--lento-tx)}.estado.instavel{color:var(--instavel-tx)}.estado.fora{color:var(--fora-tx)}.estado.manutencao{color:var(--manutencao-tx)}.estado.sem{color:var(--sem-tx)}
+.up{color:var(--ok-tx);font-weight:600;font-size:13px}
+
+.bar{position:relative;display:flex;gap:2px;height:36px;margin-top:12px;border-radius:4px;outline-offset:4px}
+.bar i{flex:1;min-width:0;border-radius:var(--r-full);background:var(--sem);cursor:pointer}
+.bar i.ok{background:var(--ok)}.bar i.lento{background:var(--lento)}.bar i.instavel{background:var(--instavel)}.bar i.fora{background:var(--fora)}.bar i.manutencao{background:var(--manutencao)}
+.bar i.sel{outline:2px solid var(--navy);outline-offset:1px}
+.leg{display:flex;justify-content:space-between;color:var(--muted);font-size:13px;margin-top:6px}
+.leg .d30{display:none}
+
+.dica{position:absolute;z-index:5;bottom:44px;transform:translateX(-50%);background:var(--navy);color:var(--white);border-radius:var(--r-md);padding:10px 12px;font-size:13px;line-height:1.4;width:max-content;max-width:260px;box-shadow:0 6px 20px rgba(30,52,97,.25);pointer-events:none}
+.dica b{display:block;font-size:14px}
+.dica ul{margin:4px 0 0;padding-left:16px}
+
+.legenda{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13px;color:var(--muted);margin:4px 0 24px;justify-content:center}
+.legenda span{display:inline-flex;align-items:center;gap:6px}
+.legenda i{width:10px;height:10px;border-radius:3px;display:inline-block}
+
+.vazio{margin:8px 0;color:var(--muted)}
+.inc{padding:16px 0;border-top:1px solid var(--border)}
+.inc h3{margin:0;color:var(--navy);font-size:16px;line-height:1.35;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.inc .meta{font-size:13px;color:var(--muted);margin-top:2px}
+.linha{list-style:none;margin:10px 0 0;padding:0 0 0 14px;border-left:2px solid var(--border)}
+.linha li{margin:0 0 10px;font-size:14px}
+.linha li b{color:var(--navy)}
+.linha time{display:block;font-size:12px;color:var(--muted)}
+.dia{color:var(--navy);font-weight:600;font-size:14px;margin:16px 0 0}
+
+.erro{background:var(--fora-bg);color:var(--fora-tx);border-radius:var(--r-md);padding:12px 16px;margin-top:16px;font-size:14px}
+footer{padding:24px 0 40px;text-align:center;color:var(--muted);font-size:13px}
+footer p{margin:4px 0}
+
+@media(max-width:560px){
+ .wrap{padding:0 16px}h1{font-size:28px}.card{padding:8px 16px 12px}header img{height:26px}
+ .bar{gap:1px}.bar i.velho60{display:none}.leg .d90{display:none}.leg .d30{display:inline}
+}
+</style>
+</head>
+<body>
+<header><div class="wrap"><a href="https://gracesonline.com.br/" aria-label="Graces"><img src="logo.png" alt="Graces" width="146" height="32"></a><span class="rotulo"><span class="par" aria-hidden="true"><i></i><i></i></span>Status da plataforma</span></div></header>
+<main class="wrap">
+  <div id="faixas"></div>
+  <section class="hero" aria-live="polite">
+    <div class="sinal" id="sinal"></div>
+    <h1 id="titulo">Carregando a situação…</h1>
+    <p id="atualizado"></p>
+    <div id="velho"></div>
+  </section>
+  <div id="erro"></div>
+  <div id="grupos"></div>
+  <div class="legenda" id="legenda"></div>
+  <section class="card" id="manutencoes"><h2>Manutenções programadas</h2><p class="vazio">Carregando…</p></section>
+  <section class="card" id="historico"><h2>Incidentes recentes</h2><p class="vazio">Carregando…</p></section>
+</main>
+<footer>
+  <p>Cada serviço é verificado a cada 5 minutos, de fora da nossa infraestrutura. Horários de Brasília.</p>
+  <p><a href="https://gracesonline.com.br/">Ir para o Graces</a></p>
+</footer>
+<script>
+"use strict";
+(function () {
+  var TZ = "America/Sao_Paulo";
+  var DIAS = 90, DIAS_CELULAR = 30, DIAS_HISTORICO = 14;
+  var VELHO_MIN = 20;            // sem amostra ha mais que isto = dados desatualizados
+  var RECARGA_MS = 60000;
+  var SEV = { ok: 0, lento: 1, instavel: 2, fora: 3 };
+  var NOME = { ok: "Operacional", lento: "Lentidão", instavel: "Instabilidade", fora: "Fora do ar", manutencao: "Em manutenção", sem: "Sem dados" };
+  var ESTADO_ATUALIZACAO = {
+    investigando: "Investigando", identificado: "Causa identificada", monitorando: "Monitorando", resolvido: "Resolvido",
+    agendada: "Agendada", "em-andamento": "Em andamento", concluida: "Concluída", cancelada: "Cancelada"
+  };
+  var ICONE = {
+    ok: '<path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>',
+    lento: '<path d="M12 6v6l4 2" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>',
+    instavel: '<path d="M12 6v7M12 17.5v.5" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>',
+    fora: '<path d="M7 7l10 10M17 7L7 17" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>',
+    manutencao: '<path d="M14.5 5.5a4 4 0 0 0-5 5L5 15l4 4 4.5-4.5a4 4 0 0 0 5-5l-2.5 2.5-2.5-.5-.5-2.5z" fill="currentColor"/>',
+    sem: '<path d="M8 12h8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>'
+  };
+
+  function svg(estado, tam) { return '<svg viewBox="0 0 24 24" width="' + tam + '" height="' + tam + '" aria-hidden="true">' + ICONE[estado] + "</svg>"; }
+  function esc(t) { return String(t == null ? "" : t).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function pior(a, b) { return (SEV[b] || 0) > (SEV[a] || 0) ? b : a; }
+  function $(id) { return document.getElementById(id); }
+
+  var fmtDia = new Intl.DateTimeFormat("pt-BR", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" });
+  var fmtHora = new Intl.DateTimeFormat("pt-BR", { timeZone: TZ, hour: "2-digit", minute: "2-digit" });
+  var fmtDiaLongo = new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC", day: "numeric", month: "long", year: "numeric" });
+  var fmtDiaCurto = new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC", day: "numeric", month: "short" });
+  function diaLocal(d) { var p = fmtDia.formatToParts(d), o = {}; p.forEach(function (x) { o[x.type] = x.value; }); return o.year + "-" + o.month + "-" + o.day; }
+  function quando(d) { return fmtDia.format(d) + " às " + fmtHora.format(d); }
+  function diaUtc(s) { return new Date(s + "T12:00:00Z"); }
+  function duracao(min) {
+    min = Math.max(1, Math.round(min));
+    if (min < 60) return min + " min";
+    var h = Math.floor(min / 60), m = min % 60;
+    if (h < 48) return h + " h" + (m ? " " + (m < 10 ? "0" : "") + m + " min" : "");
+    return Math.round(h / 24) + " dias";
+  }
+  function pct(x) { return x >= 0.99995 ? "100%" : (Math.floor(x * 10000) / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "%"; }
+
+  // Minutos de [ini, fim) que caem no dia local "AAAA-MM-DD" (Brasilia, UTC-3 fixo).
+  function minutosNoDia(ini, fim, dia) {
+    var a = new Date(dia + "T00:00:00-03:00").getTime(), b = a + 86400000;
+    var x = Math.max(a, ini.getTime()), y = Math.min(b, fim.getTime());
+    return y > x ? (y - x) / 60000 : 0;
+  }
+
+  function ultimaAtualizacao(inc) { var u = inc.atualizacoes || []; return u.length ? u[u.length - 1] : null; }
+  function manutencaoCancelada(m) { var u = ultimaAtualizacao(m); return u && u.estado === "cancelada"; }
+  function manutencaoAtiva(m, agora) {
+    var u = ultimaAtualizacao(m);
+    if (u && (u.estado === "concluida" || u.estado === "cancelada")) return false;
+    if (u && u.estado === "em-andamento") return true;
+    return new Date(m.inicio) <= agora && (!m.fim || agora < new Date(m.fim));
+  }
+  function incidenteAberto(i) { return i.tipo === "incidente" && !i.fim; }
+
+  // ----------------------------------------------------------------- render
+  function render(status, incidentes, agora) {
+    var lista = (incidentes && incidentes.incidentes) || [];
+    var abertos = lista.filter(incidenteAberto);
+    var manutAtivas = lista.filter(function (m) { return m.tipo === "manutencao" && manutencaoAtiva(m, agora); });
+
+    // Estado efetivo: o pior entre o automatico e o declarado; manutencao ativa vence.
+    var comps = status ? status.componentes : [];
+    comps.forEach(function (c) {
+      var e = c.estado || "ok";
+      abertos.forEach(function (i) { if (i.componentes.indexOf(c.id) >= 0) e = pior(e, i.impacto); });
+      if (manutAtivas.some(function (m) { return m.componentes.indexOf(c.id) >= 0; })) e = "manutencao";
+      c.efetivo = e;
+    });
+
+    var ultima = status && status.ultima_amostra ? new Date(status.ultima_amostra) : null;
+    var velho = !ultima || (agora - ultima) / 60000 > VELHO_MIN;
+
+    renderFaixas(abertos, manutAtivas);
+    renderHero(comps, ultima, velho, !!status, abertos.length + manutAtivas.length > 0);
+    renderGrupos(comps, lista, agora, velho);
+    renderLegenda(comps);
+    renderManutencoes(lista, agora);
+    renderHistorico(lista, agora);
+  }
+
+  function renderFaixas(abertos, manutAtivas) {
+    var html = "";
+    abertos.concat(manutAtivas).forEach(function (i) {
+      var u = ultimaAtualizacao(i), cls = i.tipo === "manutencao" ? "manutencao" : i.impacto;
+      html += '<section class="faixa ' + esc(cls) + '" role="status"><h2>' + esc(i.titulo) + "</h2>" +
+        '<div class="meta">' + esc(NOME[cls] || "") + " · " + esc(nomesComponentes(i.componentes)) + "</div>" +
+        (u ? "<p><b>" + esc(ESTADO_ATUALIZACAO[u.estado] || u.estado) + ":</b> " + esc(u.texto) +
+          ' <span class="meta">(' + esc(quando(new Date(u.em))) + ")</span></p>" : "") + "</section>";
+    });
+    $("faixas").innerHTML = html;
+  }
+
+  var NOMES = {};
+  function nomesComponentes(ids) { return ids.map(function (id) { return NOMES[id] || id; }).join(", "); }
+
+  function renderHero(comps, ultima, velho, temStatus, temDeclarado) {
+    var piorEstado = "ok", foraTodos = comps.length > 0, algumManut = false;
+    comps.forEach(function (c) {
+      if (c.efetivo === "manutencao") algumManut = true; else piorEstado = pior(piorEstado, c.efetivo);
+      if (c.efetivo !== "fora") foraTodos = false;
+    });
+    var titulo, sinal;
+    if (!temStatus) { titulo = "Não foi possível carregar a situação"; sinal = "sem"; }
+    else if (velho && !temDeclarado) { titulo = "Não conseguimos confirmar a situação agora"; sinal = "sem"; }
+    else if (foraTodos) { titulo = "O Graces está fora do ar"; sinal = "fora"; }
+    else if (piorEstado === "fora") { titulo = "Alguns serviços estão fora do ar"; sinal = "fora"; }
+    else if (piorEstado === "instavel") { titulo = "Alguns serviços estão instáveis"; sinal = "instavel"; }
+    else if (piorEstado === "lento") { titulo = "Alguns serviços estão lentos"; sinal = "lento"; }
+    else if (algumManut) { titulo = "Manutenção em andamento"; sinal = "manutencao"; }
+    else { titulo = "Todos os serviços estão no ar"; sinal = "ok"; }
+    $("titulo").textContent = titulo;
+    var s = $("sinal");
+    s.innerHTML = svg(sinal, 30);
+    s.style.background = "var(--" + (sinal === "sem" ? "sem-tx" : sinal) + ")";
+    $("atualizado").textContent = ultima ? "Última verificação em " + quando(ultima) + " (horário de Brasília)" : "";
+    $("velho").innerHTML = temStatus && velho
+      ? '<span class="velho">Não recebemos verificações recentes. A situação acima pode estar desatualizada.</span>' : "";
+  }
+
+  function estadoDoDia(c, dia, registro, lista) {
+    var e = null, foraMin = 0, incs = [];
+    if (registro && registro.amostras > 0) {
+      e = registro.fora ? "fora" : registro.instavel ? "instavel" : registro.lento ? "lento" : "ok";
+      foraMin = registro.fora * 5;
+    }
+    lista.forEach(function (i) {
+      if (i.componentes.indexOf(c.id) < 0) return;
+      if (i.tipo === "manutencao" && manutencaoCancelada(i)) return;
+      var ini = new Date(i.inicio), fim = i.fim ? new Date(i.fim) : new Date();
+      var m = minutosNoDia(ini, fim, dia);
+      if (m <= 0) return;
+      incs.push(i);
+      if (i.tipo === "incidente") {
+        e = pior(e || "ok", i.impacto);
+        if (i.impacto === "fora") foraMin = Math.max(foraMin, m);
+      } else if (!e || e === "ok") e = "manutencao";
+    });
+    return { estado: e || "sem", foraMin: foraMin, incidentes: incs, registro: registro };
+  }
+
+  var dadosBarras = {};
+  function renderGrupos(comps, lista, agora, velho) {
+    var hoje = diaLocal(agora), grupos = [], porGrupo = {};
+    comps.forEach(function (c) {
+      NOMES[c.id] = c.nome;
+      if (!porGrupo[c.grupo]) { porGrupo[c.grupo] = []; grupos.push(c.grupo); }
+      porGrupo[c.grupo].push(c);
+    });
+    var dias = [];
+    for (var k = DIAS - 1; k >= 0; k--) dias.push(diaLocal(new Date(agora.getTime() - k * 86400000)));
+    if (dias[dias.length - 1] !== hoje) dias.push(hoje);
+    dias = dias.slice(-DIAS);
+
+    var html = "";
+    grupos.forEach(function (g) {
+      var piorG = "ok", manut = false;
+      porGrupo[g].forEach(function (c) { if (c.efetivo === "manutencao") manut = true; else piorG = pior(piorG, c.efetivo); });
+      var seloG = velho ? "sem" : (piorG === "ok" && manut ? "manutencao" : piorG);
+      html += '<section class="card"><h2>' + esc(g) + '<span class="selo ' + seloG + '">' + svg(seloG === "sem" ? "sem" : seloG, 14) +
+        (velho ? "Desatualizado" : piorG === "ok" ? (manut ? "Em manutenção" : "Operacional") : NOME[piorG]) + "</span></h2>";
+      porGrupo[g].forEach(function (c) {
+        var reg = {}; (c.dias || []).forEach(function (d) { reg[d.dia] = d; });
+        var obsMin = 0, foraMin = 0, barras = "", info = [];
+        dias.forEach(function (dia, idx) {
+          var d = estadoDoDia(c, dia, reg[dia], lista);
+          info.push({ dia: dia, d: d });
+          if (d.registro && d.registro.amostras) { obsMin += d.registro.amostras * 5; foraMin += Math.min(d.foraMin, d.registro.amostras * 5); }
+          barras += '<i class="' + d.estado + (idx < DIAS - DIAS_CELULAR ? " velho60" : "") + '" data-i="' + idx + '"></i>';
+        });
+        dadosBarras[c.id] = info;
+        var up = obsMin ? pct(1 - foraMin / obsMin) : null;
+        // Sem amostra recente, o automatico nao vale; o declarado (incidente/manutencao) continua valendo.
+        var e = velho && c.efetivo === (c.estado || "ok") ? "sem" : c.efetivo;
+        var estadoTxt = e === "ok" ? "" : '<span class="estado ' + e + '">' + (e === "sem" ? "Sem verificação recente" : NOME[e]) + "</span>";
+        var resumo = "Histórico de " + c.nome + ": " + (up ? up + " no ar nos dias com verificação" : "sem dados ainda") +
+          ". Use as setas para ver cada dia.";
+        html += '<div class="svc"><div class="top"><span class="nome"><b class="ic ' + e + '">' + svg(e, 12) + "</b><span>" + esc(c.nome) +
+          (c.descricao ? "<small>" + esc(c.descricao) + "</small>" : "") + '</span></span><span class="dir">' + estadoTxt +
+          (up ? '<span class="up">' + up + " no ar</span>" : "") + "</span></div>" +
+          '<div class="bar" tabindex="0" role="group" aria-label="' + esc(resumo) + '" data-c="' + esc(c.id) + '">' + barras + "</div>" +
+          '<div class="leg"><span class="d90">' + DIAS + ' dias atrás</span><span class="d30">' + DIAS_CELULAR + " dias atrás</span><span>Hoje</span></div></div>";
+      });
+      html += "</section>";
+    });
+    $("grupos").innerHTML = html;
+    ligarDicas();
+  }
+
+  function renderLegenda(comps) {
+    var itens = ["ok", "lento", "instavel", "fora", "manutencao", "sem"];
+    $("legenda").innerHTML = comps.length ? itens.map(function (e) {
+      return '<span><i style="background:var(--' + (e === "sem" ? "sem" : e) + ')"></i>' + NOME[e] + "</span>";
+    }).join("") : "";
+  }
+
+  function textoDica(item) {
+    var d = item.d, dia = diaUtc(item.dia);
+    var h = "<b>" + esc(fmtDiaLongo.format(dia)) + "</b>" + esc(NOME[d.estado]);
+    if (d.registro && d.registro.amostras) {
+      h += "<br>" + d.registro.amostras + " verificaç" + (d.registro.amostras === 1 ? "ão" : "ões");
+      if (d.foraMin) h += " · " + duracao(d.foraMin) + " fora do ar";
+    } else if (!d.incidentes.length) h += "<br>Sem verificação neste dia";
+    if (d.incidentes.length) h += "<ul>" + d.incidentes.map(function (i) { return "<li>" + esc(i.titulo) + "</li>"; }).join("") + "</ul>";
+    return h;
+  }
+
+  function ligarDicas() {
+    Array.prototype.forEach.call(document.querySelectorAll(".bar"), function (bar) {
+      var info = dadosBarras[bar.getAttribute("data-c")], dica = null, sel = -1;
+      function visiveis() { return Array.prototype.filter.call(bar.children, function (x) { return x.tagName === "I" && x.offsetWidth > 0; }); }
+      function mostrar(i) {
+        var el = bar.querySelector('i[data-i="' + i + '"]');
+        if (!el) return;
+        esconder(true);
+        sel = i; el.classList.add("sel");
+        dica = document.createElement("div");
+        dica.className = "dica"; dica.setAttribute("role", "status");
+        dica.innerHTML = textoDica(info[i]);
+        bar.appendChild(dica);
+        var x = el.offsetLeft + el.offsetWidth / 2, w = dica.offsetWidth, max = bar.offsetWidth;
+        dica.style.left = Math.min(Math.max(x, w / 2), max - w / 2) + "px";
+      }
+      function esconder(manterSel) {
+        if (dica) { dica.remove(); dica = null; }
+        var s = bar.querySelector("i.sel"); if (s) s.classList.remove("sel");
+        if (!manterSel) sel = -1;
+      }
+      bar.addEventListener("mouseover", function (ev) { var i = ev.target.getAttribute && ev.target.getAttribute("data-i"); if (i != null) mostrar(+i); });
+      bar.addEventListener("mouseleave", function () { if (document.activeElement !== bar) esconder(); });
+      bar.addEventListener("click", function (ev) { var i = ev.target.getAttribute && ev.target.getAttribute("data-i"); if (i != null) mostrar(+i); });
+      bar.addEventListener("focus", function () { var v = visiveis(); if (v.length) mostrar(+v[v.length - 1].getAttribute("data-i")); });
+      bar.addEventListener("blur", function () { esconder(); });
+      bar.addEventListener("keydown", function (ev) {
+        var v = visiveis().map(function (x) { return +x.getAttribute("data-i"); }), p = v.indexOf(sel);
+        if (ev.key === "ArrowLeft" && p > 0) { mostrar(v[p - 1]); ev.preventDefault(); }
+        else if (ev.key === "ArrowRight" && p < v.length - 1) { mostrar(v[p + 1]); ev.preventDefault(); }
+        else if (ev.key === "Home") { mostrar(v[0]); ev.preventDefault(); }
+        else if (ev.key === "End") { mostrar(v[v.length - 1]); ev.preventDefault(); }
+        else if (ev.key === "Escape") { esconder(); }
+      });
+    });
+  }
+  // Toque fora das barras fecha a dica (no celular nao ha mouseleave).
+  document.addEventListener("click", function (ev) {
+    if (ev.target.closest && ev.target.closest(".bar")) return;
+    Array.prototype.forEach.call(document.querySelectorAll(".dica"), function (d) { d.remove(); });
+    Array.prototype.forEach.call(document.querySelectorAll(".bar i.sel"), function (i) { i.classList.remove("sel"); });
+  });
+
+  function linhaDoTempo(i) {
+    var u = (i.atualizacoes || []).slice().reverse();
+    if (!u.length) return "";
+    return '<ol class="linha">' + u.map(function (a) {
+      return "<li><b>" + esc(ESTADO_ATUALIZACAO[a.estado] || a.estado) + "</b> " + esc(a.texto) +
+        '<time datetime="' + esc(a.em) + '">' + esc(quando(new Date(a.em))) + "</time></li>";
+    }).join("") + "</ol>";
+  }
+
+  function renderManutencoes(lista, agora) {
+    var ms = lista.filter(function (m) {
+      return m.tipo === "manutencao" && !manutencaoCancelada(m) && (manutencaoAtiva(m, agora) || new Date(m.inicio) > agora);
+    }).sort(function (a, b) { return new Date(a.inicio) - new Date(b.inicio); });
+    var html = "<h2>Manutenções programadas</h2>";
+    if (!ms.length) html += '<p class="vazio">Nenhuma manutenção programada.</p>';
+    ms.forEach(function (m) {
+      var ini = new Date(m.inicio), fim = m.fim ? new Date(m.fim) : null;
+      var periodo = quando(ini) + (fim ? (diaLocal(ini) === diaLocal(fim) ? " às " + fmtHora.format(fim) : " até " + quando(fim)) : "");
+      html += '<div class="inc"><h3>' + esc(m.titulo) + (manutencaoAtiva(m, agora) ? ' <span class="selo manutencao">Em andamento</span>' : "") + "</h3>" +
+        '<div class="meta">' + esc(periodo) + " · " + esc(nomesComponentes(m.componentes)) + "</div>" + linhaDoTempo(m) + "</div>";
+    });
+    $("manutencoes").innerHTML = html;
+  }
+
+  function renderHistorico(lista, agora) {
+    var corte = new Date(agora.getTime() - DIAS_HISTORICO * 86400000);
+    var incs = lista.filter(function (i) {
+      return i.tipo === "incidente" && (!i.fim || new Date(i.fim) >= corte);
+    }).sort(function (a, b) { return new Date(b.inicio) - new Date(a.inicio); });
+    var html = "<h2>Incidentes recentes</h2>";
+    if (!incs.length) html += '<p class="vazio">Nenhum incidente nos últimos ' + DIAS_HISTORICO + " dias.</p>";
+    var diaAtual = null;
+    incs.forEach(function (i) {
+      var ini = new Date(i.inicio), d = diaLocal(ini);
+      if (d !== diaAtual) { diaAtual = d; html += '<p class="dia">' + esc(fmtDiaLongo.format(diaUtc(d))) + "</p>"; }
+      var dur = i.fim ? "Resolvido em " + duracao((new Date(i.fim) - ini) / 60000) : "Em aberto há " + duracao((agora - ini) / 60000);
+      html += '<div class="inc"><h3>' + esc(i.titulo) + ' <span class="selo ' + esc(i.impacto) + '">' + esc(NOME[i.impacto] || i.impacto) + "</span></h3>" +
+        '<div class="meta">' + esc(nomesComponentes(i.componentes)) + " · " + esc(dur) + "</div>" + linhaDoTempo(i) + "</div>";
+    });
+    $("historico").innerHTML = html;
+  }
+
+  // ----------------------------------------------------------------- dados
+  function buscar(url) {
+    return fetch(url + "?t=" + Date.now(), { cache: "no-store" }).then(function (r) {
+      if (!r.ok) throw new Error(url + " " + r.status);
+      return r.json();
+    });
+  }
+
+  function carregar() {
+    var agora = new Date();
+    Promise.all([
+      buscar("dados/status.json").catch(function () { return null; }),
+      buscar("incidentes.json").catch(function () { return null; })
+    ]).then(function (r) {
+      $("erro").innerHTML = r[0] ? "" : '<div class="erro" role="alert">Não conseguimos carregar as verificações automáticas agora. Tentaremos de novo em 1 minuto.</div>';
+      if (r[0]) r[0].componentes.forEach(function (c) { NOMES[c.id] = c.nome; });
+      render(r[0], r[1], agora);
+    });
+  }
+
+  carregar();
+  setInterval(function () { if (!document.hidden) carregar(); }, RECARGA_MS);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) carregar(); });
+})();
+</script>
+</body>
+</html>

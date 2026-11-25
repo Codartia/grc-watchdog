@@ -1,0 +1,110 @@
+# Pagina de status (status.gracesonline.com.br), publicada no GitHub Pages.
+#
+# Roda de dois jeitos:
+#  - chamada pelo vigia.yml a cada rodada, com os resultados da sonda: soma a
+#    rodada no historico (branch `dados`) e republica a pagina;
+#  - por push na main que mexe em site/ (o Painel grava site/incidentes.json ao
+#    declarar ou atualizar incidente): republica com o historico que ja existe,
+#    sem somar rodada nenhuma.
+#
+# O historico mora na branch `dados`, sempre com UM commit so (force push a cada
+# rodada): o que importa e o arquivo atual, nao a historia dele, e um commit a
+# cada 5 minutos incharia o repositorio sem servir para nada.
+#
+# Este workflow NAO participa da memoria do vigia (ela le so o job `sonda`), entao
+# uma falha aqui nao vira alerta de queda do Graces. Ela aparece na propria
+# pagina: sem rodada nova, depois de 20 minutos a pagina avisa que esta
+# desatualizada em vez de continuar dizendo que esta tudo no ar.
+name: pagina
+
+on:
+  workflow_call:
+    inputs:
+      resultados:
+        description: Linhas do SONDA_RESULTADOS da rodada (vazio = so republicar).
+        type: string
+        required: false
+        default: ''
+  push:
+    branches: [main]
+    paths: ['site/**', 'scripts/status.py', '.github/workflows/pagina.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write   # grava a branch `dados`
+  pages: write
+  id-token: write
+
+jobs:
+  publica:
+    runs-on: ubuntu-latest
+    # Um publish por vez. Rodadas sao 5 min, entao fila quase nunca acontece; se
+    # acontecer, o GitHub descarta a pendente mais antiga e aquela rodada some do
+    # historico (conta como rodada perdida, que a pagina ja sabe tratar).
+    concurrency:
+      group: pagina
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main   # o site publicado e sempre o da main, mesmo se chamado de outra branch
+
+      - name: Traz o historico (branch dados)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          mkdir -p "$RUNNER_TEMP/dados"
+          if git ls-remote --exit-code --heads origin dados >/dev/null 2>&1; then
+            git fetch -q --depth 1 origin dados
+            git archive FETCH_HEAD | tar -x -C "$RUNNER_TEMP/dados"
+          else
+            echo "branch dados ainda nao existe: comecando historico vazio"
+          fi
+          ls -la "$RUNNER_TEMP/dados"
+
+      - name: Soma a rodada
+        env:
+          RESULTADOS: ${{ inputs.resultados }}
+        run: |
+          set -euo pipefail
+          printf '%s\n' "${RESULTADOS:-}" | grep -v '^$' > "$RUNNER_TEMP/resultados.tsv" || true
+          echo "linhas de resultado: $(wc -l < "$RUNNER_TEMP/resultados.tsv")"
+          python3 scripts/status.py \
+            --resultados "$RUNNER_TEMP/resultados.tsv" \
+            --componentes site/componentes.json \
+            --alvos alvos.conf \
+            --dados "$RUNNER_TEMP/dados"
+
+      - name: Grava o historico (branch dados, 1 commit)
+        if: inputs.resultados
+        env:
+          TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/dados"
+          rm -rf .git
+          git init -q -b dados
+          git config user.name "grc-watchdog"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add estado.json status.json
+          git commit -q -m "dados: rodada de $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push -q -f "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" dados
+
+      - name: Monta o site
+        run: |
+          set -euo pipefail
+          mkdir -p _site/dados
+          cp -r site/. _site/
+          cp "$RUNNER_TEMP/dados/status.json" _site/dados/status.json
+          rm -f _site/componentes.json   # so o vigia usa; a pagina le o status.json
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deploy
+        uses: actions/deploy-pages@v4
