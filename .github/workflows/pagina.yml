@@ -1,8 +1,12 @@
 # Pagina de status (status.gracesonline.com.br), publicada no GitHub Pages.
 #
 # Roda de dois jeitos:
-#  - chamada pelo vigia.yml a cada rodada, com os resultados da sonda: soma a
-#    rodada no historico (branch `dados`) e republica a pagina;
+#  - disparada pelo vigia.yml a cada rodada (workflow_dispatch), com os
+#    resultados da sonda: soma a rodada no historico (branch `dados`) e
+#    republica a pagina. E uma execucao SEPARADA de proposito: chamada como
+#    workflow reutilizavel (workflow_call), o deploy-pages nao achava o artefato
+#    "github-pages" da propria execucao (25/11/2026, falhou em 2 rodadas
+#    seguidas), enquanto a execucao avulsa publicou normalmente;
 #  - por push na main que mexe em site/ (o Painel grava site/incidentes.json ao
 #    declarar ou atualizar incidente): republica com o historico que ja existe,
 #    sem somar rodada nenhuma.
@@ -18,7 +22,7 @@
 name: pagina
 
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       resultados:
         description: Linhas do SONDA_RESULTADOS da rodada (vazio = so republicar).
@@ -28,22 +32,22 @@ on:
   push:
     branches: [main]
     paths: ['site/**', 'scripts/status.py', '.github/workflows/pagina.yml']
-  workflow_dispatch:
 
 permissions:
   contents: write   # grava a branch `dados`
   pages: write
   id-token: write
 
+# Um publish por vez. Rodadas sao 5 min, entao fila quase nunca acontece; se
+# acontecer, o GitHub descarta a pendente mais antiga e aquela rodada some do
+# historico (conta como rodada perdida, que a pagina ja sabe tratar).
+concurrency:
+  group: pagina
+  cancel-in-progress: false
+
 jobs:
   publica:
     runs-on: ubuntu-latest
-    # Um publish por vez. Rodadas sao 5 min, entao fila quase nunca acontece; se
-    # acontecer, o GitHub descarta a pendente mais antiga e aquela rodada some do
-    # historico (conta como rodada perdida, que a pagina ja sabe tratar).
-    concurrency:
-      group: pagina
-      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
