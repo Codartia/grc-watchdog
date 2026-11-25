@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
+      url: ${{ steps.deploy1.outputs.page_url || steps.deploy2.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -110,5 +110,18 @@ jobs:
         with:
           path: _site
 
-      - id: deploy
+      # O deploy-pages consulta o artefato ~1 s depois do upload e, as vezes, a API
+      # ainda nao o enxerga ("Fetching artifact metadata failed" / "No artifacts
+      # named github-pages"; 4 de 8 rodadas em 25/11/2026). Uma segunda tentativa
+      # depois de uma pausa resolve; a rodada ja esta gravada na branch `dados`.
+      - id: deploy1
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+
+      - name: Pausa antes de tentar de novo
+        if: steps.deploy1.outcome == 'failure'
+        run: sleep 20
+
+      - id: deploy2
+        if: steps.deploy1.outcome == 'failure'
         uses: actions/deploy-pages@v4
