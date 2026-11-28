@@ -1,0 +1,1472 @@
+{
+ "versao": 1,
+ "gerado_em": "2026-11-28T15:40:40Z",
+ "ultima_amostra": "2026-11-28T15:40:40Z",
+ "intervalo_min": 5,
+ "dias_guardados": 90,
+ "componentes": [
+  {
+   "id": "sistema-web",
+   "nome": "Sistema web",
+   "descricao": "O Graces no navegador, usado pelo salão.",
+   "grupo": "Aplicações",
+   "estado": "ok",
+   "desde": "2026-09-09T01:01:06Z",
+   "tempo_ms": 111,
+   "dias": [
+    {
+     "dia": "2026-09-08",
+     "amostras": 5,
+     "ok": 5,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-09",
+     "amostras": 7,
+     "ok": 7,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-10",
+     "amostras": 7,
+     "ok": 7,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-11",
+     "amostras": 7,
+     "ok": 7,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-12",
+     "amostras": 8,
+     "ok": 8,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-13",
+     "amostras": 8,
+     "ok": 8,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-14",
+     "amostras": 5,
+     "ok": 5,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-15",
+     "amostras": 6,
+     "ok": 6,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-16",
+     "amostras": 7,
+     "ok": 7,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-17",
+     "amostras": 6,
+     "ok": 6,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-18",
+     "amostras": 7,
+     "ok": 7,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-19",
+     "amostras": 8,
+     "ok": 8,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-20",
+     "amostras": 7,
+     "ok": 7,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-21",
+     "amostras": 5,
+     "ok": 5,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-22",
+     "amostras": 6,
+     "ok": 6,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-23",
+     "amostras": 6,
+     "ok": 6,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-24",
+     "amostras": 6,
+     "ok": 6,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-25",
+     "amostras": 6,
+     "ok": 6,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-26",
+     "amostras": 7,
+     "ok": 7,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-27",
+     "amostras": 27,
+     "ok": 27,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-28",
+     "amostras": 291,
+     "ok": 291,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-29",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-30",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-01",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-02",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-03",
+     "amostras": 294,
+     "ok": 294,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-04",
+     "amostras": 294,
+     "ok": 294,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-05",
+     "amostras": 271,
+     "ok": 271,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-06",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-07",
+     "amostras": 288,
+     "ok": 288,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-08",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-09",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-10",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-11",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-12",
+     "amostras": 290,
+     "ok": 290,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-13",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-14",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-15",
+     "amostras": 295,
+     "ok": 295,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-16",
+     "amostras": 294,
+     "ok": 294,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-17",
+     "amostras": 296,
+     "ok": 296,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-18",
+     "amostras": 296,
+     "ok": 296,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-19",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-20",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-21",
+     "amostras": 290,
+     "ok": 290,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-22",
+     "amostras": 294,
+     "ok": 294,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-23",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-24",
+     "amostras": 295,
+     "ok": 295,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-25",
+     "amostras": 294,
+     "ok": 294,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-26",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-27",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-28",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-29",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-30",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-31",
+     "amostras": 294,
+     "ok": 294,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-01",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-02",
+     "amostras": 291,
+     "ok": 291,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-03",
+     "amostras": 291,
+     "ok": 291,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-04",
+     "amostras": 288,
+     "ok": 288,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-05",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-06",
+     "amostras": 291,
+     "ok": 291,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-07",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-08",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-09",
+     "amostras": 289,
+     "ok": 289,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-10",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-11",
+     "amostras": 286,
+     "ok": 286,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-12",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-13",
+     "amostras": 290,
+     "ok": 290,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-14",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-15",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-16",
+     "amostras": 291,
+     "ok": 291,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-17",
+     "amostras": 291,
+     "ok": 291,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-18",
+     "amostras": 291,
+     "ok": 291,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-19",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-20",
+     "amostras": 291,
+     "ok": 291,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-21",
+     "amostras": 291,
+     "ok": 291,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-22",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-23",
+     "amostras": 290,
+     "ok": 290,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-24",
+     "amostras": 291,
+     "ok": 291,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-25",
+     "amostras": 288,
+     "ok": 288,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-26",
+     "amostras": 290,
+     "ok": 290,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-27",
+     "amostras": 291,
+     "ok": 291,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-28",
+     "amostras": 155,
+     "ok": 155,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    }
+   ]
+  },
+  {
+   "id": "app-agendamento",
+   "nome": "App de agendamento",
+   "descricao": "A agenda online em que o cliente do salão marca horário.",
+   "grupo": "Aplicações",
+   "estado": "ok",
+   "desde": "2026-11-25T16:45:32Z",
+   "tempo_ms": 271,
+   "dias": [
+    {
+     "dia": "2026-11-25",
+     "amostras": 125,
+     "ok": 125,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-26",
+     "amostras": 290,
+     "ok": 290,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-27",
+     "amostras": 291,
+     "ok": 291,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-28",
+     "amostras": 155,
+     "ok": 155,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    }
+   ]
+  },
+  {
+   "id": "app-profissional",
+   "nome": "App do profissional",
+   "descricao": "O app em que o profissional vê a agenda e as comissões.",
+   "grupo": "Aplicações",
+   "estado": "ok",
+   "desde": "2026-11-25T16:45:32Z",
+   "tempo_ms": 125,
+   "dias": [
+    {
+     "dia": "2026-11-25",
+     "amostras": 125,
+     "ok": 125,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-26",
+     "amostras": 290,
+     "ok": 290,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-27",
+     "amostras": 291,
+     "ok": 291,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-28",
+     "amostras": 155,
+     "ok": 155,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    }
+   ]
+  },
+  {
+   "id": "api-publica",
+   "nome": "API Pública",
+   "descricao": "A API para sistemas parceiros integrarem com o Graces.",
+   "grupo": "Integrações",
+   "estado": "ok",
+   "desde": "2026-09-09T01:01:06Z",
+   "tempo_ms": 270,
+   "dias": [
+    {
+     "dia": "2026-09-08",
+     "amostras": 5,
+     "ok": 5,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-09",
+     "amostras": 7,
+     "ok": 7,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-10",
+     "amostras": 7,
+     "ok": 7,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-11",
+     "amostras": 7,
+     "ok": 7,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-12",
+     "amostras": 8,
+     "ok": 8,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-13",
+     "amostras": 8,
+     "ok": 8,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-14",
+     "amostras": 5,
+     "ok": 5,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-15",
+     "amostras": 6,
+     "ok": 6,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-16",
+     "amostras": 7,
+     "ok": 7,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-17",
+     "amostras": 6,
+     "ok": 6,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-18",
+     "amostras": 7,
+     "ok": 7,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-19",
+     "amostras": 8,
+     "ok": 8,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-20",
+     "amostras": 7,
+     "ok": 7,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-21",
+     "amostras": 5,
+     "ok": 5,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-22",
+     "amostras": 6,
+     "ok": 6,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-23",
+     "amostras": 6,
+     "ok": 6,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-24",
+     "amostras": 6,
+     "ok": 6,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-25",
+     "amostras": 6,
+     "ok": 6,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-26",
+     "amostras": 7,
+     "ok": 7,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-27",
+     "amostras": 27,
+     "ok": 27,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-28",
+     "amostras": 291,
+     "ok": 291,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-29",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-09-30",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-01",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-02",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-03",
+     "amostras": 294,
+     "ok": 294,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-04",
+     "amostras": 294,
+     "ok": 294,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-05",
+     "amostras": 271,
+     "ok": 271,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-06",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-07",
+     "amostras": 288,
+     "ok": 288,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-08",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-09",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-10",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-11",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-12",
+     "amostras": 290,
+     "ok": 290,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-13",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-14",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-15",
+     "amostras": 295,
+     "ok": 295,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-16",
+     "amostras": 294,
+     "ok": 294,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-17",
+     "amostras": 296,
+     "ok": 296,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-18",
+     "amostras": 296,
+     "ok": 296,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-19",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-20",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-21",
+     "amostras": 290,
+     "ok": 290,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-22",
+     "amostras": 294,
+     "ok": 294,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-23",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-24",
+     "amostras": 295,
+     "ok": 295,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-25",
+     "amostras": 294,
+     "ok": 294,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-26",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-27",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-28",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-29",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-30",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-10-31",
+     "amostras": 294,
+     "ok": 294,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-01",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-02",
+     "amostras": 291,
+     "ok": 291,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-03",
+     "amostras": 291,
+     "ok": 291,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-04",
+     "amostras": 288,
+     "ok": 288,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-05",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-06",
+     "amostras": 291,
+     "ok": 291,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-07",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-08",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-09",
+     "amostras": 289,
+     "ok": 289,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-10",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-11",
+     "amostras": 286,
+     "ok": 286,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-12",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-13",
+     "amostras": 290,
+     "ok": 290,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-14",
+     "amostras": 293,
+     "ok": 293,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-15",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-16",
+     "amostras": 291,
+     "ok": 291,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-17",
+     "amostras": 291,
+     "ok": 291,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-18",
+     "amostras": 291,
+     "ok": 291,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-19",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-20",
+     "amostras": 291,
+     "ok": 291,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-21",
+     "amostras": 291,
+     "ok": 291,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-22",
+     "amostras": 292,
+     "ok": 292,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-23",
+     "amostras": 290,
+     "ok": 290,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-24",
+     "amostras": 291,
+     "ok": 291,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-25",
+     "amostras": 288,
+     "ok": 288,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-26",
+     "amostras": 290,
+     "ok": 290,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-27",
+     "amostras": 291,
+     "ok": 291,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-28",
+     "amostras": 155,
+     "ok": 155,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    }
+   ]
+  },
+  {
+   "id": "portal-desenvolvedor",
+   "nome": "Portal do desenvolvedor",
+   "descricao": "A documentação da API Pública.",
+   "grupo": "Integrações",
+   "estado": "ok",
+   "desde": "2026-11-25T16:45:32Z",
+   "tempo_ms": 124,
+   "dias": [
+    {
+     "dia": "2026-11-25",
+     "amostras": 125,
+     "ok": 125,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-26",
+     "amostras": 290,
+     "ok": 290,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-27",
+     "amostras": 291,
+     "ok": 291,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    },
+    {
+     "dia": "2026-11-28",
+     "amostras": 155,
+     "ok": 155,
+     "lento": 0,
+     "instavel": 0,
+     "fora": 0
+    }
+   ]
+  }
+ ]
+}
